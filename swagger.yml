@@ -1,0 +1,253 @@
+consumes:
+- application/json
+info:
+  description: 98Point6 Drop Token microservice
+  title: 98point6DropToken
+  version: 0.1.0
+produces:
+- application/json
+schemes:
+- http
+swagger: "2.0"
+paths:
+  /drop_token:
+    get:
+      operationId: "GetAllGames"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/AllGames"
+    post:
+      operationId: "CreateGame"
+      parameters:
+        - in: body
+          name: NewGame
+          required: true
+          schema:
+            $ref: "#/definitions/NewGame"
+      responses:  
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/Game"
+        400:
+          description: "Malformed Request"
+          schema:
+            $ref: "#/definitions/MalformedRequest"
+  /drop_token/{gameId}:
+    get:
+      operationId: "GetGame"
+      parameters:
+        - in: path
+          name: gameId
+          required: true
+          type: string
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/GameState"
+        400:
+          description: "Malformed Request"
+          schema:
+            $ref: "#/definitions/MalformedRequest"
+        404:
+          description: "Game not found"
+          schema:
+            $ref: "#/definitions/MalformedRequest"          
+  /drop_token/{gameId}/moves:
+    get:
+      operationId: "GetAllMoves"
+      parameters:
+        - in: path
+          name: gameId
+          required: true
+          type: string
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/AllMoves"
+        400:
+          description: "Malformed Request"
+          schema:
+            $ref: "#/definitions/MalformedRequest"
+        404:
+          description: "Game not found"
+          schema:
+            $ref: "#/definitions/MalformedRequest"
+  /drop_token/{gameId}/{playerId}:
+    post:
+      operationId: "MakeMove"
+      parameters:
+        - in: path
+          name: gameId
+          required: true
+          type: string
+        - in: path
+          name: playerId
+          required: true
+          type: string
+        - in: body
+          name: NewMove
+          required: true
+          schema:
+            $ref: "#/definitions/NewMove"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/MoveOutput"
+        400:
+          description: "Malformed Request. Illegal move."
+          schema:
+            $ref: "#/definitions/MalformedRequest"
+        404:
+          description: "Game/player not found"
+          schema:
+            $ref: "#/definitions/MalformedRequest"
+        409:
+          description: "Played out of turn"
+          schema:
+            $ref: "#/definitions/MalformedRequest"
+    delete:
+      operationId: "RemovePlayer"
+      parameters:
+        - in: path
+          name: gameId
+          required: true
+          type: string
+        - in: path
+          name: playerId
+          required: true
+          type: string
+      responses:
+        202:
+          description: "OK"
+        404:
+          description: "Game/player not found"
+          schema:
+            $ref: "#/definitions/MalformedRequest"
+        410:
+          description: "Game is already DONE"
+          schema:
+            $ref: "#/definitions/MalformedRequest"
+  /drop_token/{gameId}/moves/{move_number}:
+    get:
+      operationId: "GetMove"
+      parameters:
+        - in: path
+          name: gameId
+          required: true
+          type: string
+        - in: path
+          name: move_number
+          required: true
+          type: integer
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/Move"
+        400:
+          description: "Malformed Request."
+          schema:
+            $ref: "#/definitions/MalformedRequest"
+        404:
+          description: "Game/Move not found"
+          schema:
+            $ref: "#/definitions/MalformedRequest"
+      
+definitions:
+  MalformedRequest:
+    type: object
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+    description: "Malformed request"
+  Game:
+    type: object
+    properties:
+      gameId:
+        type: string
+  AllGames:
+    type: object
+    properties:
+      games:
+        type: array
+        items:
+          type: string
+    required:
+      - games
+  NewGame:
+    type: object
+    properties:
+      players:
+        type: array
+        items:
+          type: string
+          minItems: 2
+          maxItems: 2
+      columns:
+        type: integer
+      rows:
+        type: integer
+    required:
+      - players
+      - columns
+      - rows
+  GameState:
+    type: object
+    properties:
+      players:
+        type: array
+        items:
+          type: string
+          minItems: 2
+          maxItems: 2
+      state:
+        type: string
+      winner:
+        type: string
+    required:
+      - players
+      - state
+  Move:
+    type: object
+    properties:
+      type:
+        type: string
+      player:
+        type: string
+      column:
+        type: integer
+    required:
+      - type
+      - player
+  AllMoves:
+    type: object
+    properties:
+      moves:
+        type: array
+        items:
+          $ref: "#/definitions/Move"
+    required:
+      - moves
+  NewMove:
+    type: object
+    properties:
+      column:
+        type: integer
+    required:
+      - column
+  MoveOutput:
+    type: object
+    properties:
+      move:
+        type: string
+    required:
+      - move
+  
