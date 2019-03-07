@@ -1,5 +1,6 @@
 ### This project requires the use of OpenAPI2.0(swagger) and Golang commandline tools
 ### We also use 'dep' to manage dependencies which will need to be downloaded before the project can be built
+### Please note that many of the files in this project are auto-generated and should not be overwritten. These are marked as such in the headers.
 
 ### generate swagger files
 swagger generate server -f swagger.yml
@@ -32,6 +33,8 @@ curl -X GET http://localhost:8086/drop_token/Game1/moves
 The reason for this error is that "column" is an optional parameter to Move and is omitted when empty. A value of 0 is taken as the empty value and this field is removed.
 This should be fixed by porting the swagger spec to OpenAPI 3.0 which allows for multiple object types in an array.
 
-- Missing functional tests
+- Missing functional tests.
 
 - The project only supports 2 players on a 4x4 board. Additional tests are needed before increasing either of these dimensions.
+
+- Missing logging and needs more error handling.
